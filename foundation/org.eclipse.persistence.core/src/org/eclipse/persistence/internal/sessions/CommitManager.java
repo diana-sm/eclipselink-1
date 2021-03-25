@@ -261,70 +261,70 @@ public class CommitManager {
                 }
                 if (!isProcessedCommit(objectToWrite)) {
 //                     Commit and resume on failure can cause a new change set to be in existing, so need to check here.
-                    WriteObjectQuery commitQuery = null;
-                    if (changeSetToWrite.isNew()) {
-                        commitQuery = new InsertObjectQuery();
-                    } else {
-                        commitQuery = new UpdateObjectQuery();
-                    }
-                    commitQuery.setIsExecutionClone(true);
-                    commitQuery.setDescriptor(descriptor);
-                    commitQuery.setObjectChangeSet(changeSetToWrite);
-                    commitQuery.setObject(objectToWrite);
-                    commitQuery.cascadeOnlyDependentParts();
-                    // removed checking session type to set cascade level
-                    // will always be a unitOfWork so we need to cascade dependent parts
-                    session.executeQuery(commitQuery);
-
-
-
-
-//                    List<org.eclipse.persistence.sessions.changesets.ChangeRecord> changeSetToWriteChanges = changeSetToWrite.changes;
-//                    if (changeSetToWrite.isNew() || (changeSetToWriteChanges != null && !changeSetToWriteChanges.isEmpty())) {
-//                        WriteObjectQuery commitQuery = null;
-//                        if (changeSetToWrite.isNew()) {
-//                            commitQuery = new InsertObjectQuery();
-//                        } else {
-//                            commitQuery = new UpdateObjectQuery();
-//                        }
-//                        commitQuery.setIsExecutionClone(true);
-//                        commitQuery.setDescriptor(descriptor);
-//                        commitQuery.setObjectChangeSet(changeSetToWrite);
-//                        commitQuery.setObject(objectToWrite);
-//                        commitQuery.cascadeOnlyDependentParts();
-//                        // removed checking session type to set cascade level
-//                        // will always be a unitOfWork so we need to cascade dependent parts
-//                        session.executeQuery(commitQuery);
+//                    WriteObjectQuery commitQuery = null;
+//                    if (changeSetToWrite.isNew()) {
+//                        commitQuery = new InsertObjectQuery();
 //                    } else {
-//                        ReadObjectQuery query = new ReadObjectQuery();
-//                        query.setIsExecutionClone(true);
-//                        query.setDescriptor(descriptor);
-//                        Class objectClass = objectToWrite.getClass();
-//                        Method method = null;
-//                        Integer objectVersion = null;
-//                        try {
-//                            method = objectClass.getDeclaredMethod("getVersion");
-//                            objectVersion = (Integer) method.invoke(objectToWrite);
-//                        } catch (Exception e) {
-//                            e.printStackTrace();
-//                        }
-//                        query.setSelectionObject(objectToWrite);
-//                        query.refreshIdentityMapResult();
-//                        query.cascadeAllParts();
-//                        query.dontCheckCache();
-//                        Object result = session.executeQuery(query);
-//                        Integer resultVersion = null;
-//                        try {
-//                            resultVersion = (Integer) method.invoke(result);
-//                            if (resultVersion == null || !objectVersion.equals(resultVersion)) {
-//                                throw OptimisticLockException.objectChangedSinceLastReadWhenUpdating(result);
-//                            }
-//                        } catch (IllegalAccessException e) {
-//                            e.printStackTrace();
-//                        } catch (InvocationTargetException e) {
-//                            e.printStackTrace();
-//                        }
+//                        commitQuery = new UpdateObjectQuery();
 //                    }
+//                    commitQuery.setIsExecutionClone(true);
+//                    commitQuery.setDescriptor(descriptor);
+//                    commitQuery.setObjectChangeSet(changeSetToWrite);
+//                    commitQuery.setObject(objectToWrite);
+//                    commitQuery.cascadeOnlyDependentParts();
+//                    // removed checking session type to set cascade level
+//                    // will always be a unitOfWork so we need to cascade dependent parts
+//                    session.executeQuery(commitQuery);
+
+
+
+
+                    List<org.eclipse.persistence.sessions.changesets.ChangeRecord> changeSetToWriteChanges = changeSetToWrite.changes;
+                    if (changeSetToWrite.isNew() || (changeSetToWriteChanges != null && !changeSetToWriteChanges.isEmpty())) {
+                        WriteObjectQuery commitQuery = null;
+                        if (changeSetToWrite.isNew()) {
+                            commitQuery = new InsertObjectQuery();
+                        } else {
+                            commitQuery = new UpdateObjectQuery();
+                        }
+                        commitQuery.setIsExecutionClone(true);
+                        commitQuery.setDescriptor(descriptor);
+                        commitQuery.setObjectChangeSet(changeSetToWrite);
+                        commitQuery.setObject(objectToWrite);
+                        commitQuery.cascadeOnlyDependentParts();
+                        // removed checking session type to set cascade level
+                        // will always be a unitOfWork so we need to cascade dependent parts
+                        session.executeQuery(commitQuery);
+                    } else {
+                        ReadObjectQuery query = new ReadObjectQuery();
+                        query.setIsExecutionClone(true);
+                        query.setDescriptor(descriptor);
+                        Class objectClass = objectToWrite.getClass();
+                        Method method = null;
+                        Integer objectVersion = null;
+                        try {
+                            method = objectClass.getDeclaredMethod("getVersion");
+                            objectVersion = (Integer) method.invoke(objectToWrite);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                        query.setSelectionObject(objectToWrite);
+                        query.refreshIdentityMapResult();
+                        query.cascadeAllParts();
+                        query.dontCheckCache();
+                        Object result = session.executeQuery(query);
+                        Integer resultVersion = null;
+                        try {
+                            resultVersion = (Integer) method.invoke(result);
+                            if (resultVersion == null || !objectVersion.equals(resultVersion)) {
+                                throw OptimisticLockException.objectChangedSinceLastReadWhenUpdating(result);
+                            }
+                        } catch (IllegalAccessException e) {
+                            e.printStackTrace();
+                        } catch (InvocationTargetException e) {
+                            e.printStackTrace();
+                        }
+                    }
                 }
             }
         }
